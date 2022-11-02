@@ -10,7 +10,11 @@ let defaultVal,
   setRythmicDivKick,
   setRythmicDivSnare,
   setRythmicDivClosedHiHat,
-  button;
+  button,
+  muteBtn1,
+  muteBtn2,
+  muteBtn3;
+
 let setKick, setSnare, setClosedHiHat;
 let kick, snare, closedHiHat;
 
@@ -46,8 +50,11 @@ let intervalsArrSnare = [
 function preload() {
   let baseURL = "assets/";
 
-  const drumsBus = new Tone.Channel(-0.25, -12).toDestination();
-  
+  const hihat = new Tone.Channel(-0.25, -1).toDestination();
+  var pingPong = new Tone.PingPongDelay("4n", 0.2).toDestination();
+
+  hihat.connect(pingPong);
+
   kick = new Tone.Players({
     kick1: baseURL + "kick1.mp3",
     kick2: baseURL + "kick2.mp3",
@@ -66,24 +73,21 @@ function preload() {
     closedHiHat1: baseURL + "hihat1.mp3",
     closedHiHat2: baseURL + "hihat2.mp3",
     closedHiHat3: baseURL + "hihat3.mp3",
-  }).connect(drumsBus);
+  }).connect(hihat);
 }
 
 function setup() {
   let cnv = createCanvas(1000, 1000);
   // cnv.mousePressed(canvasPressed);
 
-  
-
   //mixer section
-  snare.volume.value = -8
-  kick.volume.value = -10
-  closedHiHat.volume.value = -8
+  snare.volume.value = -8;
+  kick.volume.value = -10;
+  closedHiHat.volume.value = -8;
 
   // effects
-  
-  const dist = new Tone.Distortion(0.8).toDestination();
 
+  const dist = new Tone.Distortion(0.8).toDestination();
 
   defaultVal = 5;
 
@@ -118,7 +122,17 @@ function setup() {
   button.position(10, 10);
   button.mousePressed(playSound);
 
-  
+  muteBtn1 = createButton("mute kick");
+  muteBtn1.position(350, 100);
+  muteBtn1.mousePressed(drumLoopAStop);
+
+  muteBtn2 = createButton("mute snare");
+  muteBtn2.position(350, 200);
+  muteBtn2.mousePressed(drumLoopBStop);
+
+  muteBtn3 = createButton("mute hihat");
+  muteBtn3.position(350, 300);
+  muteBtn3.mousePressed(drumLoopCStop);
 
   const now = Tone.now();
 
@@ -191,6 +205,29 @@ function setup() {
   });
 }
 
+function drumLoopAStop() {
+  if (drumLoopA.state == "started") {
+    drumLoopA.stop();
+  } else {
+    drumLoopA.start();
+  }
+}
+
+function drumLoopBStop() {
+  if (drumLoopB.state == "started") {
+    drumLoopB.stop();
+  } else {
+    drumLoopB.start();
+  }
+}
+
+function drumLoopCStop() {
+  if (drumLoopC.state == "started") {
+    drumLoopC.stop();
+  } else {
+    drumLoopC.start();
+  }
+}
 function playSound() {
   console.log("play");
   Tone.start();
